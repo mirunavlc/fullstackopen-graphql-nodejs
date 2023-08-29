@@ -114,7 +114,8 @@ type Query{
 type Author{
   name: String,
   id: ID!,
-  bookCount: Int
+  bookCount: Int, 
+  born: Int
 }
 
 type Mutation{
@@ -148,13 +149,18 @@ const resolvers = {
       return {
         name: author.name,
         id: author.id,
-        bookCount: findBooks(author.name).length
+        bookCount: findBooks(author.name).length,
+        born: author.born
       };
     }),
   },
   Mutation: {
     addBook: (root, args) => {
       const book = { ...args, id: uuid() };
+      if (!authors.includes(book.author)) {
+        const author = { id: uuid(), name: book.author, bookCount: 1, born: null };
+        authors = authors.concat(author)
+      }
       books = books.concat(book);
       return book;
     }
